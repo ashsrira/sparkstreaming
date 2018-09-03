@@ -1,0 +1,10 @@
+{"namespace": "com.kafka.producer.avro",
+ "type": "record",
+ "name": "twitterRecord",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "tweet",  "type": "string"},
+     {"name": "location",  "type": "string"},
+     {"name": "id", "type": "long"}
+ ]
+}
