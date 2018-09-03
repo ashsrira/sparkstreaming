@@ -15,7 +15,7 @@ import twitter4j.*;
 import twitter4j.Query;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class streamingClient{
+public class StreamingClient{
 
     private static final String SEARCH_TERM    = "job";
     private static final int TWEETS_PER_QUERY  = 100;
@@ -39,18 +39,9 @@ public class streamingClient{
         }
     }
 
-    public static Query getQuery() {
-        /* function to get query */
-        Query q = new Query(SEARCH_TERM);
-        q.setResultType(Query.RECENT);
-        q.setCount(10);
-        q.setLang("ENG");
-
-        return q;
-    }
     public static void main(String[] args) throws Exception {
         /* Init the kafka producer */
-        final kafkaProducer x = new kafkaProducer();
+        final MyKafkaProducer producer = new MyKafkaProducer();
         final ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("")
@@ -61,9 +52,6 @@ public class streamingClient{
         final StatusListener listener = new StatusListener(){
             public void onStatus(Status status) {
                 System.out.println(status.getUser().getName() + " : " + status.getText());
-                //convert to AVRO
-
-                // Create the twitter record
 
                 twitterRecord record = new twitterRecord();
                 record.setName(status.getUser().getName());
@@ -77,7 +65,7 @@ public class streamingClient{
                 }
                 try {
                     byte[] data = SerializationUtils.serialize(record);
-                    x.sendMessage2(data);
+                    producer.sendMessageToKafkaBroker(data);
                 }
                 catch (Exception e) {
                     System.out.println(e.toString());

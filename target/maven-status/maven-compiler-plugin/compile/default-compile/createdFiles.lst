@@ -1,4 +1,7 @@
-com/kafka/producer/kafkaProducer.class
 com/kafka/producer/StreamingClient$1.class
-com/kafka/producer/runClass.class
+com/kafka/producer/twitterRecord.class
+com/spark/consumer/MySparkConsumer.class
+com/kafka/producer/MyKafkaProducer.class
 com/kafka/producer/StreamingClient.class
+com/kafka/producer/twitterRecord$Builder.class
+com/kafka/producer/twitterRecord$1.class

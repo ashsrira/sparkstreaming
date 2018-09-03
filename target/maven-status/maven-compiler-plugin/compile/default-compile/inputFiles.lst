@@ -1,3 +1,4 @@
-/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/kafkaProducer.java
-/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/runClass.java
-/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/streamingClient.java
+/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/StreamingClient.java
+/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/twitterRecord.java
+/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/kafka/producer/MyKafkaProducer.java
+/Users/ashsrira/IdeaProjects/sparkstreamingfinal/src/main/java/com/spark/consumer/MySparkConsumer.java
