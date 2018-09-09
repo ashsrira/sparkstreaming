@@ -1,7 +1,9 @@
 package com.kafka.producer;
+
 import java.util.Properties;
+import com.twitter.record.RecordSerializer;
+import com.twitter.record.MyTwitterRecord;
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 
 public class MyKafkaProducer {
@@ -10,7 +12,7 @@ public class MyKafkaProducer {
     private static final String KAFKA_SERVERS = "localhost:9092";
     private static final Integer BUFFER_MEMORY = 33554432;
     private static final Integer BATCH_SIZE = 16384;
-    private Producer<Long, byte[]> kafkaProducer;
+    private Producer<Long, MyTwitterRecord> kafkaProducer;
 
     public MyKafkaProducer() {
         /* Constructor */
@@ -22,17 +24,17 @@ public class MyKafkaProducer {
         props.put("linger.ms", 1);
         props.put("buffer.memory", BUFFER_MEMORY);
         props.put("key.serializer", LongSerializer.class.getName());
-        props.put("value.serializer", ByteArraySerializer.class.getName());
-        this.kafkaProducer = new KafkaProducer<Long, byte[]>(props);
+        props.put("value.serializer", RecordSerializer.class.getName());
+        this.kafkaProducer = new KafkaProducer<>(props);
     }
 
-    public void sendMessageToKafkaBroker(byte[] message) throws Exception {
+    public void sendMessageToKafkaBroker(MyTwitterRecord message) throws Exception {
         /* Function to send Message to Kafka - Message has the current time as the index and the bytearray of twitter record */
 
         long time = System.currentTimeMillis();
 
         try {
-            final ProducerRecord<Long, byte[]> record = new ProducerRecord<Long, byte[]>(KAFKA_TOPIC, time, message);
+            final ProducerRecord<Long, MyTwitterRecord> record = new ProducerRecord<Long, MyTwitterRecord>(KAFKA_TOPIC, time, message);
 
             RecordMetadata metadata =  this.kafkaProducer.send(record).get();
 

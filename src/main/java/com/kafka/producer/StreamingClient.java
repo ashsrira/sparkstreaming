@@ -1,43 +1,10 @@
 package com.kafka.producer;
-import java.net.*;
-import java.io.*;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.avro.io.DatumWriter;
-import org.apache.avro.specific.SpecificDatumWriter;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.twitter.record.MyTwitterRecord;
 import twitter4j.*;
-import twitter4j.Query;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class StreamingClient{
-
-    private static final String SEARCH_TERM    = "job";
-    private static final int TWEETS_PER_QUERY  = 100;
-
-    public static void getRateLimitStatus(Twitter twitter) {
-        try {
-            Map<String ,RateLimitStatus> rateLimitStatus = twitter.getRateLimitStatus();
-            for (String endpoint : rateLimitStatus.keySet()) {
-                RateLimitStatus status = rateLimitStatus.get(endpoint);
-                System.out.println("Endpoint: " + endpoint);
-                System.out.println(" Limit: " + status.getLimit());
-                System.out.println(" Remaining: " + status.getRemaining());
-                System.out.println(" ResetTimeInSeconds: " + status.getResetTimeInSeconds());
-                System.out.println(" SecondsUntilReset: " + status.getSecondsUntilReset());
-            }
-            System.exit(0);
-        } catch (TwitterException te) {
-            te.printStackTrace();
-            System.out.println("Failed to get rate limit status: " + te.getMessage());
-            System.exit(-1);
-        }
-    }
 
     public static void main(String[] args) throws Exception {
         /* Init the kafka producer */
@@ -49,26 +16,30 @@ public class StreamingClient{
                 .setOAuthAccessToken("")
                 .setOAuthAccessTokenSecret("");
         System.setProperty("java.net.useSystemProxies", "true");
+
+
         final StatusListener listener = new StatusListener(){
             public void onStatus(Status status) {
-                System.out.println(status.getUser().getName() + " : " + status.getText());
-
-                twitterRecord record = new twitterRecord();
-                record.setName(status.getUser().getName());
-                record.setTweet(status.getText());
-                record.setId(status.getUser().getId());
+                String location = null;
+                String name = status.getUser().getName();
+                String tweet = status.getText();
+                Long id = status.getUser().getId();
                 try {
-                    record.setLocation(status.getPlace().toString());
+                    location = status.getPlace().getCountry();
+                }
+                catch (java.lang.NullPointerException e) {
+                    e.printStackTrace();
+                }
+                MyTwitterRecord record = new MyTwitterRecord();
+                record.setId(id);
+                record.setName(name);
+                record.setTweet(tweet);
+                record.setLocation(location);
+                try {
+                    producer.sendMessageToKafkaBroker(record);
                 }
                 catch (Exception e) {
-                    record.setLocation("NULL");
-                }
-                try {
-                    byte[] data = SerializationUtils.serialize(record);
-                    producer.sendMessageToKafkaBroker(data);
-                }
-                catch (Exception e) {
-                    System.out.println(e.toString());
+                   e.printStackTrace();
                 }
             }
 
